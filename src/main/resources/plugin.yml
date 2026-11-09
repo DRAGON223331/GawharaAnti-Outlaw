@@ -1,8 +1,8 @@
 name: GawharaAnti-outlaw
-version: 1.0.0
+version: 1.1.0
 main: io.github.gawhara.antoutlaw.GawharaAntiOutlaw
 api-version: '26.1'
-description: Chat, link, mining anomaly and client-brand monitoring.
+description: Chat, link, X-Ray (hidden-ore analysis, decoys, evidence image) and client-brand monitoring with detailed Discord alerts.
 authors: [Gawhara]
 commands:
   gawharaoutlaw:

@@ -1,11 +1,13 @@
 # GawharaAnti-outlaw configuration
 # IMPORTANT: Never publish your Discord webhook URL or commit it to a public repository.
+
 discord:
   enabled: true
   webhook-url: ""
   channel-id: "1569226221886382230" # Reference only; a channel ID is NOT a webhook URL.
   username: "GawharaAnti-outlaw"
-  send-chat-content: false
+  # Send the FULL blocked message / link to Discord (recommended for moderators).
+  include-blocked-content: true
   notify-joins: false
 
 chat:
@@ -14,13 +16,54 @@ chat:
     action: "BLOCK" # BLOCK or WARN
     warn-message: "&cPlease keep the chat respectful."
     blocked-message: "&cYour message was blocked by server chat protection."
-    # Add your own words here. Keep this list appropriate for your server.
+    # Treat "شتتتيمة" like "شتيمة" (repeated letters collapsed). Arabic diacritics, tatweel,
+    # alef/yaa/taa-marbuta variants, spaces, symbols and leetspeak are always normalized.
+    collapse-repeated-letters: true
+    # Matched ANYWHERE in the message (even with spaces/symbols between letters).
     blocked-words:
       - "badword"
       - "شتيمة"
+    # Matched only as a standalone word (use for short words that appear inside normal words).
+    # Note: with collapse-repeated-letters ON, "ass" becomes "as" - prefer words that stay unique.
+    whole-word-words: []
   anti-link:
     enabled: true
     blocked-message: "&cThis link type is not allowed."
+    # Also block links written without http(s)/www, e.g. "evil.com", "evil (dot) com".
+    block-bare-domains: true
+    block-discord-invites: true
+    bare-domain-tlds:
+      - "com"
+      - "net"
+      - "org"
+      - "gg"
+      - "io"
+      - "xyz"
+      - "me"
+      - "tv"
+      - "cc"
+      - "ly"
+      - "to"
+      - "co"
+      - "info"
+      - "app"
+      - "dev"
+      - "link"
+      - "ru"
+      - "tk"
+      - "ml"
+      - "ga"
+      - "cf"
+      - "gq"
+      - "top"
+      - "site"
+      - "online"
+      - "club"
+      - "shop"
+      - "fun"
+      - "vip"
+      - "pw"
+      - "ws"
     # Direct media file extensions allowed in links:
     allowed-extensions:
       - "png"
@@ -48,17 +91,54 @@ chat:
 
 xray-monitor:
   enabled: true
-  # This is a heuristic alert, NOT proof of cheating and does not automatically ban.
-  minimum-ore-breaks: 18
-  minimum-stone-breaks: 80
-  suspicious-ore-ratio: 0.22
+  # Sliding window of mining history used for scoring.
+  window-minutes: 10
+  # "Hidden ore" = an ore that was NOT visible (no cave/old tunnel next to it) until the player's
+  # own tunnel opened it. Ores seen in caves are counted separately and never raise suspicion.
+  minimum-hidden-ores: 5
+  minimum-stone-breaks: 60
+  # Hidden-ore / (hidden-ore + stone) ratio: <= ratio-low adds 0 points, >= ratio-high adds the maximum.
+  ratio-low: 0.02
+  ratio-high: 0.12
+  # Score (0-100) levels. Alerts are sent from threshold-low upward and again when the level rises.
+  threshold-low: 40
+  threshold-medium: 60
+  threshold-high: 80
   alert-cooldown-seconds: 600
+  # Attach a server-drawn evidence image (dig path, ores, fake ores) to the Discord alert.
+  # It is a reconstruction from server data, NOT a screenshot of the player's screen
+  # (a server plugin cannot see a player's screen).
+  evidence-image: true
+  evidence-min-score: 40
   monitored-ores:
     - "DIAMOND_ORE"
     - "DEEPSLATE_DIAMOND_ORE"
     - "EMERALD_ORE"
     - "DEEPSLATE_EMERALD_ORE"
     - "ANCIENT_DEBRIS"
+
+  # Fake-ore trap. For suspected X-Ray users, fully enclosed stone near them is shown (on THEIR client only)
+  # as rich ore. The real world is untouched: it is still plain stone. A normal player cannot see enclosed
+  # blocks so notices nothing; an X-Ray client lights them up. Tunnelling to many of them is strong evidence.
+  decoys:
+    mode: "SUSPECTS"       # OFF | SUSPECTS (only flagged players) | ALL (every survival player)
+    trigger-score: 25      # SUSPECTS mode: start the trap at this score ...
+    trigger-hidden-ores: 3 # ... or after this many hidden ores in the window
+    duration-seconds: 600  # how long the trap stays on after the last trigger
+    radius: 8
+    density: 0.04          # fraction of enclosed stone blocks that look like ore
+    max-per-player: 250
+    max-y: 64
+    interval-ticks: 40
+    cells-per-break: 3.0   # statistics: new blocks a tunnel step uncovers (used for the "by chance" estimate)
+    fake-ores:
+      - "DIAMOND_ORE"
+      - "EMERALD_ORE"
+      - "ANCIENT_DEBRIS"
+      - "GOLD_ORE"
+      - "IRON_ORE"
+      - "LAPIS_ORE"
+      - "REDSTONE_ORE"
 
 client-brand-monitor:
   enabled: true
@@ -79,4 +159,4 @@ messages:
   status: "&eGawharaAnti-outlaw is running."
   exempt-added: "&aPlayer added to bypass list."
   exempt-removed: "&aPlayer removed from bypass list."
-  usage: "&e/gao reload | status | exempt add <player> | exempt remove <player>"
+  usage: "&e/gao status | reload | test | exempt add|remove|list <player> | xray <player> | evidence <player>"
