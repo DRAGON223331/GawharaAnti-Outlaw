@@ -1,0 +1,82 @@
+# GawharaAnti-outlaw configuration
+# IMPORTANT: Never publish your Discord webhook URL or commit it to a public repository.
+discord:
+  enabled: true
+  webhook-url: ""
+  channel-id: "1569226221886382230" # Reference only; a channel ID is NOT a webhook URL.
+  username: "GawharaAnti-outlaw"
+  send-chat-content: false
+  notify-joins: false
+
+chat:
+  anti-swear:
+    enabled: true
+    action: "BLOCK" # BLOCK or WARN
+    warn-message: "&cPlease keep the chat respectful."
+    blocked-message: "&cYour message was blocked by server chat protection."
+    # Add your own words here. Keep this list appropriate for your server.
+    blocked-words:
+      - "badword"
+      - "شتيمة"
+  anti-link:
+    enabled: true
+    blocked-message: "&cThis link type is not allowed."
+    # Direct media file extensions allowed in links:
+    allowed-extensions:
+      - "png"
+      - "jpg"
+      - "jpeg"
+      - "gif"
+      - "webp"
+      - "mp3"
+      - "wav"
+      - "ogg"
+      - "mp4"
+      - "webm"
+      - "mov"
+      - "m4v"
+    # Known video platforms allowed even when URL has no media extension.
+    allowed-video-hosts:
+      - "youtube.com"
+      - "youtu.be"
+      - "youtube-nocookie.com"
+      - "vimeo.com"
+      - "twitch.tv"
+      - "clips.twitch.tv"
+      - "streamable.com"
+      - "dailymotion.com"
+
+xray-monitor:
+  enabled: true
+  # This is a heuristic alert, NOT proof of cheating and does not automatically ban.
+  minimum-ore-breaks: 18
+  minimum-stone-breaks: 80
+  suspicious-ore-ratio: 0.22
+  alert-cooldown-seconds: 600
+  monitored-ores:
+    - "DIAMOND_ORE"
+    - "DEEPSLATE_DIAMOND_ORE"
+    - "EMERALD_ORE"
+    - "DEEPSLATE_EMERALD_ORE"
+    - "ANCIENT_DEBRIS"
+
+client-brand-monitor:
+  enabled: true
+  # Client brand strings are voluntarily reported by clients and can be spoofed or absent.
+  suspicious-brand-keywords:
+    - "wurst"
+    - "meteor"
+    - "liquidbounce"
+    - "aristois"
+    - "impact"
+    - "inertia"
+  action: "ALERT" # ALERT only; never kick based on brand alone.
+
+messages:
+  prefix: "&8[&6Gawhara&cAnti-outlaw&8] "
+  no-permission: "&cYou don't have permission."
+  reloaded: "&aConfiguration reloaded."
+  status: "&eGawharaAnti-outlaw is running."
+  exempt-added: "&aPlayer added to bypass list."
+  exempt-removed: "&aPlayer removed from bypass list."
+  usage: "&e/gao reload | status | exempt add <player> | exempt remove <player>"

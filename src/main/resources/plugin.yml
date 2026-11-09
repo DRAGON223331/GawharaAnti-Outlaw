@@ -1,0 +1,18 @@
+name: GawharaAnti-outlaw
+version: 1.0.0
+main: io.github.gawhara.antoutlaw.GawharaAntiOutlaw
+api-version: '26.1'
+description: Chat, link, mining anomaly and client-brand monitoring.
+authors: [Gawhara]
+commands:
+  gawharaoutlaw:
+    description: Manage GawharaAnti-outlaw
+    aliases: [gao, outlaw]
+    usage: /gao <reload|status|exempt>
+permissions:
+  gawharaoutlaw.admin:
+    description: Manage plugin and view alerts
+    default: op
+  gawharaoutlaw.bypass:
+    description: Bypass chat/link filters and heuristic monitoring
+    default: false
